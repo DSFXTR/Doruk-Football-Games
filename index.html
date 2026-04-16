@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doruk Futbol Games</title>
+    <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-pink: #ff00ff;
+            --neon-purple: #9d00ff;
+            --dark-bg: #0a0a0a;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Neon Başlık */
+        h1 {
+            font-size: 3rem;
+            color: #fff;
+            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
+            margin-top: 50px;
+        }
+
+        .container {
+            width: 80%;
+            max-width: 600px;
+            text-align: center;
+            padding: 20px;
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 15px var(--neon-pink);
+            border-radius: 15px;
+            margin-top: 30px;
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        /* Sayfa Bölümleri */
+        .section { display: none; }
+        .active { display: block; }
+
+        /* Butonlar */
+        button {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--neon-blue);
+            padding: 10px 25px;
+            margin: 10px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            box-shadow: 0 0 5px var(--neon-blue);
+        }
+
+        button:hover {
+            background: var(--neon-blue);
+            color: black;
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        /* Logo Alanı */
+        .logo-placeholder {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border: 2px dashed var(--neon-purple);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        input[type="text"] {
+            padding: 10px;
+            width: 80%;
+            border-radius: 5px;
+            border: 2px solid var(--neon-pink);
+            background: #222;
+            color: white;
+            margin-bottom: 15px;
+            outline: none;
+        }
+
+        .result-text { font-size: 1.5rem; margin-top: 20px; color: var(--neon-blue); }
+    </style>
+</head>
+<body>
+
+    <h1>DORUK FUTBOL GAMES</h1>
+
+    <div id="home" class="container section active">
+        <h2 style="color: var(--neon-pink);">Hoş Geldin Şampiyon!</h2>
+        <p>Futbol bilginle dünyayı fethetmeye hazır mısın?</p>
+        <button onclick="showSection('levels')">Oyuna Başla</button>
+    </div>
+
+    <div id="levels" class="container section">
+        <h3>Zorluk Seviyesi Seç</h3>
+        <button onclick="startGame('easy')">Kolay</button>
+        <button onclick="startGame('medium')">Orta</button>
+        <button onclick="startGame('hard')">Zor</button>
+        <button onclick="startGame('impossible')" style="border-color: red; box-shadow: 0 0 5px red;">İMKANSIZ</button>
+    </div>
+
+    <div id="game" class="container section">
+        <div id="question-info">Soru: 1 / 10</div>
+        <div class="logo-placeholder" id="logo-container">
+            <img id="team-logo" src="" alt="Takım Logosu" style="max-width: 100%; max-height: 100%;">
+        </div>
+        <input type="text" id="answer-input" placeholder="Takımın ismini yaz...">
+        <br>
+        <button onclick="checkAnswer()">Cevapla</button>
+        <button onclick="nextQuestion()" style="border-color: gray; box-shadow: none;">Atla</button>
+        <p id="feedback"></p>
+    </div>
+
+    <div id="result" class="container section">
+        <h3>Oyun Bitti!</h3>
+        <div id="score-display" class="result-text"></div>
+        <div id="rank-text" style="font-weight: bold; margin: 15px 0;"></div>
+        <button onclick="location.reload()">Tekrar Oyna</button>
+    </div>
+
+    <script>
+        // Örnek Veri Seti (Gerçek logolar için URL eklemelisin)
+        const teamData = {
+            easy: [
+                { name: "Galatasaray", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Galatasaray_Star_Logo.png" },
+                { name: "Real Madrid", img: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" }
+                // Buraya 10'a tamamlayacak kadar ekleyebilirsin
+            ],
+            // Diğer seviyeler için de benzer listeler...
+        };
+
+        let currentLevel = [];
+        let currentIndex = 0;
+        let score = 0;
+
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function startGame(level) {
+            // Şimdilik kolaydan alıyoruz, sen her seviye için ayrı liste yapabilirsin
+            currentLevel = teamData.easy; 
+            currentIndex = 0;
+            score = 0;
+            showSection('game');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if (currentIndex < 10 && currentIndex < currentLevel.length) {
+                document.getElementById('question-info').innerText = `Soru: ${currentIndex + 1} / 10`;
+                document.getElementById('team-logo').src = currentLevel[currentIndex].img;
+                document.getElementById('answer-input').value = "";
+                document.getElementById('feedback').innerText = "";
+            } else {
+                finishGame();
+            }
+        }
+
+        function checkAnswer() {
+            let userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
+            let correctAnswer = currentLevel[currentIndex].name.toLowerCase();
+
+            if (userAnswer === correctAnswer) {
+                score++;
+                nextQuestion();
+            } else {
+                document.getElementById('feedback').innerText = "Yanlış! Tekrar dene veya atla.";
+                document.getElementById('feedback').style.color = "red";
+            }
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < 10) {
+                loadQuestion();
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            showSection('result');
+            document.getElementById('score-display').innerText = `Skor: 10 / ${score}`;
+            
+            let rank = "";
+            if (score === 10) rank = "Futbol seviyen MÜKEMMEL! 🏆";
+            else if (score >= 6) rank = "Gayet İyi! ⚽";
+            else if (score === 5) rank = "Orta Şekerli... 🟦";
+            else rank = "Daha çok çalışmalısın! ❌";
+
+            document.getElementById('rank-text').innerText = rank;
+        }
+    </script>
+</body>
+</html>
