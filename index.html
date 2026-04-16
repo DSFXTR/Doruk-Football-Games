@@ -9,90 +9,84 @@
             --neon-blue: #00f3ff;
             --neon-pink: #ff00ff;
             --neon-purple: #9d00ff;
-            --dark-bg: #0a0a0a;
+            --dark-bg: #050505;
         }
 
         body {
             background-color: var(--dark-bg);
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
-            overflow-x: hidden;
         }
 
-        /* Neon Başlık */
         h1 {
-            font-size: 3rem;
-            color: #fff;
-            text-shadow: 0 0 10px var(--neon-blue), 0 0 20px var(--neon-blue), 0 0 40px var(--neon-blue);
-            margin-top: 50px;
+            font-size: 3.5rem;
+            text-shadow: 0 0 20px var(--neon-blue);
+            margin-bottom: 10px;
         }
 
         .container {
-            width: 80%;
+            width: 90%;
             max-width: 600px;
             text-align: center;
-            padding: 20px;
-            border: 2px solid var(--neon-pink);
-            box-shadow: 0 0 15px var(--neon-pink);
-            border-radius: 15px;
-            margin-top: 30px;
-            background: rgba(0, 0, 0, 0.8);
+            padding: 30px;
+            border: 3px solid var(--neon-purple);
+            box-shadow: 0 0 25px var(--neon-purple);
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.9);
         }
 
-        /* Sayfa Bölümleri */
         .section { display: none; }
         .active { display: block; }
 
-        /* Butonlar */
         button {
             background: transparent;
             color: white;
             border: 2px solid var(--neon-blue);
-            padding: 10px 25px;
+            padding: 15px 30px;
             margin: 10px;
             cursor: pointer;
-            font-size: 1.1rem;
-            border-radius: 5px;
-            transition: 0.3s;
-            text-transform: uppercase;
-            box-shadow: 0 0 5px var(--neon-blue);
+            font-size: 1.2rem;
+            border-radius: 10px;
+            transition: 0.4s;
         }
 
         button:hover {
             background: var(--neon-blue);
             color: black;
-            box-shadow: 0 0 20px var(--neon-blue);
+            box-shadow: 0 0 30px var(--neon-blue);
         }
 
-        /* Logo Alanı */
-        .logo-placeholder {
-            width: 200px;
-            height: 200px;
+        .logo-box {
+            width: 250px;
+            height: 250px;
             margin: 20px auto;
-            border: 2px dashed var(--neon-purple);
+            background: white;
+            padding: 15px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: bold;
+            box-shadow: 0 0 15px white;
         }
 
-        input[type="text"] {
-            padding: 10px;
+        .logo-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        input {
+            padding: 12px;
             width: 80%;
-            border-radius: 5px;
+            font-size: 1.1rem;
             border: 2px solid var(--neon-pink);
-            background: #222;
+            background: #111;
             color: white;
-            margin-bottom: 15px;
-            outline: none;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            text-align: center;
         }
-
-        .result-text { font-size: 1.5rem; margin-top: 20px; color: var(--neon-blue); }
     </style>
 </head>
 <body>
@@ -100,50 +94,92 @@
     <h1>DORUK FUTBOL GAMES</h1>
 
     <div id="home" class="container section active">
-        <h2 style="color: var(--neon-pink);">Hoş Geldin Şampiyon!</h2>
-        <p>Futbol bilginle dünyayı fethetmeye hazır mısın?</p>
-        <button onclick="showSection('levels')">Oyuna Başla</button>
+        <h2 style="color: var(--neon-pink);">Stadyuma Hoş Geldin!</h2>
+        <p>Dünyanın en zor futbol logo testine hazır mısın?</p>
+        <button onclick="showSection('levels')">BAŞLA</button>
     </div>
 
     <div id="levels" class="container section">
-        <h3>Zorluk Seviyesi Seç</h3>
-        <button onclick="startGame('easy')">Kolay</button>
-        <button onclick="startGame('medium')">Orta</button>
-        <button onclick="startGame('hard')">Zor</button>
-        <button onclick="startGame('impossible')" style="border-color: red; box-shadow: 0 0 5px red;">İMKANSIZ</button>
+        <h3>ZORLUK SEÇ</h3>
+        <button onclick="startGame('easy')">KOLAY (Süper Lig)</button>
+        <button onclick="startGame('medium')">ORTA (Premier League)</button>
+        <button onclick="startGame('hard')">ZOR (Dünya Ligleri)</button>
+        <button onclick="startGame('impossible')">İMKANSIZ (Efsaneler)</button>
     </div>
 
     <div id="game" class="container section">
-        <div id="question-info">Soru: 1 / 10</div>
-        <div class="logo-placeholder" id="logo-container">
-            <img id="team-logo" src="" alt="Takım Logosu" style="max-width: 100%; max-height: 100%;">
+        <div id="question-info" style="color: var(--neon-blue); font-weight: bold;"></div>
+        <div class="logo-box">
+            <img id="team-logo" src="" alt="Logo">
         </div>
-        <input type="text" id="answer-input" placeholder="Takımın ismini yaz...">
+        <input type="text" id="answer-input" placeholder="Takım ismini yaz..." onkeydown="if(event.key==='Enter') checkAnswer()">
         <br>
-        <button onclick="checkAnswer()">Cevapla</button>
-        <button onclick="nextQuestion()" style="border-color: gray; box-shadow: none;">Atla</button>
+        <button onclick="checkAnswer()">ONAYLA</button>
+        <button onclick="nextQuestion()" style="border-color: #555;">PAS GEÇ</button>
         <p id="feedback"></p>
     </div>
 
     <div id="result" class="container section">
-        <h3>Oyun Bitti!</h3>
-        <div id="score-display" class="result-text"></div>
-        <div id="rank-text" style="font-weight: bold; margin: 15px 0;"></div>
-        <button onclick="location.reload()">Tekrar Oyna</button>
+        <h3>MAÇ BİTTİ!</h3>
+        <div id="score-display" style="font-size: 2rem; color: var(--neon-pink);"></div>
+        <div id="rank-text" style="margin: 20px; font-size: 1.5rem;"></div>
+        <button onclick="location.reload()">ANA MENÜYE DÖN</button>
     </div>
 
     <script>
-        // Örnek Veri Seti (Gerçek logolar için URL eklemelisin)
-        const teamData = {
+        // TAKIM VERİLERİ (Her seviye için 10 tane)
+        const database = {
             easy: [
                 { name: "Galatasaray", img: "https://upload.wikimedia.org/wikipedia/commons/3/37/Galatasaray_Star_Logo.png" },
-                { name: "Real Madrid", img: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" }
-                // Buraya 10'a tamamlayacak kadar ekleyebilirsin
+                { name: "Fenerbahçe", img: "https://upload.wikimedia.org/wikipedia/tr/f/ff/Fenerbah%C3%A7e_SK.png" },
+                { name: "Beşiktaş", img: "https://upload.wikimedia.org/wikipedia/commons/2/20/Be%C5%9Fikta%C5%9F_JK_Logo_ve_Y%C4%B1ld%C4%B1zlar%C4%B1.png" },
+                { name: "Trabzonspor", img: "https://upload.wikimedia.org/wikipedia/tr/a/ab/Trabzonspor_Logo.png" },
+                { name: "Kayserispor", img: "https://upload.wikimedia.org/wikipedia/tr/b/b9/Kayserispor_logosu.png" },
+                { name: "Samsunspor", img: "https://upload.wikimedia.org/wikipedia/tr/4/41/Samsunspor_logo.png" },
+                { name: "Antalyaspor", img: "https://upload.wikimedia.org/wikipedia/tr/c/c3/Antalyaspor_logo.png" },
+                { name: "Kasımpaşa", img: "https://upload.wikimedia.org/wikipedia/tr/f/f6/Kas%C4%B1mpa%C5%9Fa_SK_logo.png" },
+                { name: "Göztepe", img: "https://upload.wikimedia.org/wikipedia/tr/a/a2/G%C3%B6ztepe_Spor_Kul%C3%BCb%C3%BC_Logo.png" },
+                { name: "Eyüpspor", img: "https://upload.wikimedia.org/wikipedia/tr/3/3c/Ey%C3%BCpspor_Logo.png" }
             ],
-            // Diğer seviyeler için de benzer listeler...
+            medium: [
+                { name: "Manchester City", img: "https://upload.wikimedia.org/wikipedia/en/e/eb/Manchester_City_FC_badge.svg" },
+                { name: "Liverpool", img: "https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg" },
+                { name: "Arsenal", img: "https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg" },
+                { name: "Barcelona", img: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona.svg" },
+                { name: "Real Madrid", img: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" },
+                { name: "Bayern Münih", img: "https://upload.wikimedia.org/wikipedia/commons/1/1b/FC_Bayern_M%C3%BCnchen_logo_%282017%29.svg" },
+                { name: "Paris Saint Germain", img: "https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg" },
+                { name: "Inter", img: "https://upload.wikimedia.org/wikipedia/commons/0/05/FC_Internazionale_Milano_2021.svg" },
+                { name: "Juventus", img: "https://upload.wikimedia.org/wikipedia/commons/b/bc/Juventus_FC_2017_icon_%28black%29.svg" },
+                { name: "Bayer Leverkusen", img: "https://upload.wikimedia.org/wikipedia/en/5/59/Bayer_04_Leverkusen_logo.svg" }
+            ],
+            hard: [
+                { name: "Benfica", img: "https://upload.wikimedia.org/wikipedia/en/a/a2/SL_Benfica_logo.svg" },
+                { name: "Ajax", img: "https://upload.wikimedia.org/wikipedia/en/7/79/AFC_Ajax_logo.svg" },
+                { name: "Porto", img: "https://upload.wikimedia.org/wikipedia/en/f/f1/FC_Porto.svg" },
+                { name: "Feyenoord", img: "https://upload.wikimedia.org/wikipedia/en/e/e3/Feyenoord_logo.svg" },
+                { name: "Sporting Lizbon", img: "https://upload.wikimedia.org/wikipedia/en/e/e1/Sporting_Clube_de_Portugal.svg" },
+                { name: "Celtic", img: "https://upload.wikimedia.org/wikipedia/en/3/3b/Celtic_FC_crest.svg" },
+                { name: "Rangers", img: "https://upload.wikimedia.org/wikipedia/en/4/43/Rangers_FC.svg" },
+                { name: "PSV Eindhoven", img: "https://upload.wikimedia.org/wikipedia/en/0/05/PSV_Eindhoven.svg" },
+                { name: "River Plate", img: "https://upload.wikimedia.org/wikipedia/commons/a/ac/River_Plate_Logo.svg" },
+                { name: "Boca Juniors", img: "https://upload.wikimedia.org/wikipedia/en/4/41/Boca_Juniors_logo.svg" }
+            ],
+            impossible: [
+                { name: "Forest Green Rovers", img: "https://upload.wikimedia.org/wikipedia/en/2/2e/Forest_Green_Rovers_FC_logo.svg" },
+                { name: "Vasco da Gama", img: "https://upload.wikimedia.org/wikipedia/en/b/b5/CRVascodaGama.svg" },
+                { name: "Mazembe", img: "https://upload.wikimedia.org/wikipedia/en/a/a0/TP_Mazembe_logo.png" },
+                { name: "Al Ahly", img: "https://upload.wikimedia.org/wikipedia/en/8/8c/Al_Ahly_SC_logo.png" },
+                { name: "Independiente", img: "https://upload.wikimedia.org/wikipedia/commons/d/db/Escudo_Club_Atl%C3%A9tico_Independiente.svg" },
+                { name: "Kashima Antlers", img: "https://upload.wikimedia.org/wikipedia/en/6/63/Kashima_Antlers_logo.svg" },
+                { name: "Steaua Bükreş", img: "https://upload.wikimedia.org/wikipedia/en/c/c6/FCSB_logo.svg" },
+                { name: "Red Star Belgrade", img: "https://upload.wikimedia.org/wikipedia/commons/b/bb/FK_Crvena_zvezda_logo.svg" },
+                { name: "Partizan", img: "https://upload.wikimedia.org/wikipedia/en/6/6d/FK_Partizan_logo.svg" },
+                { name: "Penarol", img: "https://upload.wikimedia.org/wikipedia/commons/4/41/Club_Atl%C3%A9tico_Pe%C3%B1arol_logo.svg" }
+            ]
         };
 
-        let currentLevel = [];
+        let currentQuestions = [];
         let currentIndex = 0;
         let score = 0;
 
@@ -153,8 +189,7 @@
         }
 
         function startGame(level) {
-            // Şimdilik kolaydan alıyoruz, sen her seviye için ayrı liste yapabilirsin
-            currentLevel = teamData.easy; 
+            currentQuestions = database[level];
             currentIndex = 0;
             score = 0;
             showSection('game');
@@ -162,47 +197,46 @@
         }
 
         function loadQuestion() {
-            if (currentIndex < 10 && currentIndex < currentLevel.length) {
-                document.getElementById('question-info').innerText = `Soru: ${currentIndex + 1} / 10`;
-                document.getElementById('team-logo').src = currentLevel[currentIndex].img;
+            if (currentIndex < 10) {
+                document.getElementById('question-info').innerText = `SORU: ${currentIndex + 1} / 10`;
+                document.getElementById('team-logo').src = currentQuestions[currentIndex].img;
                 document.getElementById('answer-input').value = "";
                 document.getElementById('feedback').innerText = "";
+                document.getElementById('answer-input').focus();
             } else {
                 finishGame();
             }
         }
 
         function checkAnswer() {
-            let userAnswer = document.getElementById('answer-input').value.trim().toLowerCase();
-            let correctAnswer = currentLevel[currentIndex].name.toLowerCase();
+            let userAns = document.getElementById('answer-input').value.trim().toLowerCase();
+            let correctAns = currentQuestions[currentIndex].name.toLowerCase();
 
-            if (userAnswer === correctAnswer) {
+            // Küçük yazım farklılıklarını tolera et (Örn: Real Madrid CF yerine Real Madrid)
+            if (userAns === correctAns || correctAns.includes(userAns) && userAns.length > 4) {
                 score++;
-                nextQuestion();
+                currentIndex++;
+                loadQuestion();
             } else {
-                document.getElementById('feedback').innerText = "Yanlış! Tekrar dene veya atla.";
+                document.getElementById('feedback').innerText = "YANLIŞ CEVAP! TEKRAR DENE.";
                 document.getElementById('feedback').style.color = "red";
             }
         }
 
         function nextQuestion() {
             currentIndex++;
-            if (currentIndex < 10) {
-                loadQuestion();
-            } else {
-                finishGame();
-            }
+            loadQuestion();
         }
 
         function finishGame() {
             showSection('result');
-            document.getElementById('score-display').innerText = `Skor: 10 / ${score}`;
+            document.getElementById('score-display').innerText = `SKORUN: 10 / ${score}`;
             
             let rank = "";
-            if (score === 10) rank = "Futbol seviyen MÜKEMMEL! 🏆";
-            else if (score >= 6) rank = "Gayet İyi! ⚽";
-            else if (score === 5) rank = "Orta Şekerli... 🟦";
-            else rank = "Daha çok çalışmalısın! ❌";
+            if (score === 10) rank = "🏆 FUTBOL SEVİYEN MÜKEMMEL!";
+            else if (score >= 6) rank = "⚽ İYİ BİR TARAFTARSIN!";
+            else if (score === 5) rank = "🟦 ORTA SEVİYE";
+            else rank = "❌ FUTBOL BİLGİN ZAYIF, DAHA ÇOK MAÇ İZLE!";
 
             document.getElementById('rank-text').innerText = rank;
         }
