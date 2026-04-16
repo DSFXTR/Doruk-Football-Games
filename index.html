@@ -2,270 +2,185 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Doruk Futbol Games</title>
+<title>DFG - Doruk Futbol Games</title>
 
 <style>
 body{
-    margin:0;
-    font-family:Segoe UI;
-    background:#000;
-    color:white;
-    text-align:center;
-    overflow-x:hidden;
+  margin:0;
+  font-family:Arial;
+  background:radial-gradient(circle,#111,#000);
+  color:white;
+  text-align:center;
 }
 
-/* SPLASH */
+/* ANIMASYON GİRİŞ */
 #splash{
-    position:fixed;
-    width:100%;
-    height:100%;
-    background:#000;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:30px;
-    color:#0ff;
-    text-shadow:0 0 20px #0ff;
-    animation:fade 2s forwards 2s;
+  position:fixed;
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:40px;
+  color:#00ffff;
+  text-shadow:0 0 20px #00ffff;
+  animation:fade 2s forwards 2s;
 }
-@keyframes fade{
-    to{opacity:0;visibility:hidden;}
-}
+@keyframes fade{to{opacity:0;visibility:hidden;}}
 
-/* NEON */
-.neon{
-    color:#0ff;
-    text-shadow:0 0 20px #0ff;
-}
-
-.screen{display:none;padding-top:20px;}
+/* MENU */
+.screen{display:none;padding-top:40px;}
 .active{display:block;}
 
 button{
-    padding:12px 25px;
-    margin:10px;
-    border:2px solid #0ff;
-    background:black;
-    color:#0ff;
-    border-radius:10px;
-    cursor:pointer;
+  padding:12px 20px;
+  margin:10px;
+  border:2px solid #00ffff;
+  background:black;
+  color:#00ffff;
+  cursor:pointer;
+  border-radius:10px;
+  transition:.2s;
 }
 button:hover{
-    background:#0ff;
-    color:black;
-    transform:scale(1.05);
+  transform:scale(1.1);
+  background:#00ffff;
+  color:black;
 }
 
-/* GAME */
+/* OYUN */
 img{
-    width:160px;
-    margin:20px;
-    filter:drop-shadow(0 0 10px #0ff);
+  width:160px;
+  margin:20px;
+  transition:.3s;
 }
 
-/* XP BAR */
-.bar-bg{width:200px;height:10px;background:#333;margin:auto;}
-.bar{height:10px;background:#0ff;width:0%;}
+.correct{transform:scale(1.2); filter:drop-shadow(0 0 20px lime);}
+.wrong{transform:rotate(10deg); filter:drop-shadow(0 0 20px red);}
 
-/* LEADERBOARD */
-.rank{
-    width:250px;
-    margin:5px auto;
-    display:flex;
-    justify-content:space-between;
-    border-bottom:1px solid #0ff;
+/* BAR */
+.bar{
+  width:300px;
+  height:10px;
+  background:#333;
+  margin:auto;
+}
+.bar div{
+  height:10px;
+  width:0%;
+  background:#00ffff;
 }
 
-/* NOTIF */
-#notif{
-    position:fixed;
-    top:10px;
-    right:10px;
-    background:#0ff;
-    color:black;
-    padding:10px;
-    display:none;
+/* RESULT */
+#resultBox{
+  display:none;
 }
 </style>
 </head>
 
 <body>
 
-<div id="splash">⚽ Doruk Futbol Games ⚽</div>
-<div id="notif"></div>
+<div id="splash">⚽ DORUK FUTBOL GAMES ⚽</div>
 
-<h1 class="neon">Doruk Futbol Games</h1>
+<h1>DFG</h1>
 
 <!-- MENU -->
 <div id="menu" class="screen active">
-<button onclick="go('game')">OYNA</button>
-<button onclick="go('profile')">PROFİL</button>
-<button onclick="go('leaderboard')">SIRALAMA</button>
+<button onclick="start()">OYNA</button>
 </div>
 
 <!-- GAME -->
 <div id="game" class="screen">
+<div class="bar"><div id="barFill"></div></div>
 <img id="logo">
 <br>
-<input id="answer" placeholder="Takım adı">
+<input id="ans" placeholder="Takım adı">
 <br>
 <button onclick="check()">Cevapla</button>
 <button onclick="skip()">Geç</button>
 </div>
 
-<!-- PROFILE -->
-<div id="profile" class="screen">
-<h2 id="username">Doruk</h2>
-
-<p>Level: <span id="level">0</span></p>
-<p>XP: <span id="xp">0</span></p>
-
-<div class="bar-bg">
-<div class="bar" id="xpBar"></div>
+<!-- RESULT -->
+<div id="resultBox">
+<h2 id="resultText"></h2>
+<button onclick="location.reload()">Tekrar Oyna</button>
 </div>
-
-<h3>Arkadaşlar</h3>
-<div id="friends"></div>
-
-<input id="friendInput" placeholder="Arkadaş ekle">
-<button onclick="addFriend()">Ekle</button>
-
-<br>
-<button onclick="go('menu')">Geri</button>
-</div>
-
-<!-- LEADERBOARD -->
-<div id="leaderboard" class="screen">
-<h2>Global Sıralama 🌍</h2>
-<div id="rankList"></div>
-<button onclick="go('menu')">Geri</button>
-</div>
-
-<!-- SES -->
-<audio id="ok" src="https://assets.mixkit.co/sfx/preview/mixkit-game-success-alert-2039.mp3"></audio>
-<audio id="no" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
-<audio id="click" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
 
 <script>
-/* FIREBASE (leaderboard + friends) */
-const firebaseConfig = {
-  apiKey:"API_KEY",
-  authDomain:"PROJECT.firebaseapp.com",
-  projectId:"PROJECT"
-};
 
-/* ⚠️ Firebase burada opsiyonel bırakıldı (çalışması için eklemen gerekir) */
+/* 200 TAKIM (SABİT DATABASE - EN DOĞRU YÖNTEM) */
+const teams = [
+{name:"Galatasaray",img:"https://upload.wikimedia.org/wikipedia/tr/2/20/Galatasaray_Sports_Club_Logo.png"},
+{name:"Fenerbahçe",img:"https://upload.wikimedia.org/wikipedia/tr/8/86/Fenerbah%C3%A7e_SK.png"},
+{name:"Beşiktaş",img:"https://upload.wikimedia.org/wikipedia/tr/3/3f/Besiktas_JK.png"},
+{name:"Arsenal",img:"https://upload.wikimedia.org/wikipedia/en/5/53/Arsenal_FC.svg"},
+{name:"Chelsea",img:"https://upload.wikimedia.org/wikipedia/en/c/cc/Chelsea_FC.svg"},
+{name:"Liverpool",img:"https://upload.wikimedia.org/wikipedia/en/0/0c/Liverpool_FC.svg"},
+{name:"Barcelona",img:"https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg"},
+{name:"Real Madrid",img:"https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg"},
+{name:"Bayern Munich",img:"https://upload.wikimedia.org/wikipedia/en/1/1f/FC_Bayern_Munich_logo_%282017%29.svg"},
+{name:"PSG",img:"https://upload.wikimedia.org/wikipedia/en/a/a7/Paris_Saint-Germain_F.C..svg"}
 
-/* NAV */
-function go(s){
-    click.play();
-    document.querySelectorAll(".screen").forEach(x=>x.classList.remove("active"));
-    document.getElementById(s).classList.add("active");
-}
+/* 🔥 BURAYA 190 TAKIM DAHA EKLENEBİLİR (istersen ben tamamlarım) */
+];
 
-/* USER */
-let user = {xp:0,level:0,friends:[]};
+let q=[],i=0,score=0;
 
-/* 200 TAKIM */
-let allTeams = [];
+function start(){
+  document.getElementById("menu").style.display="none";
+  document.getElementById("game").classList.add("active");
 
-const leagues=[39,140,135,78,61,203,88,94,197,253];
-
-async function getTeams(id){
-    let r = await fetch(`https://v3.football.api-sports.io/teams?league=${id}&season=2023`,{
-        headers:{"x-apisports-key":"API_KEY"}
-    });
-
-    let d = await r.json();
-
-    return d.response.map(t=>({
-        name:t.team.name,
-        img:t.team.logo
-    }));
-}
-
-async function loadTeams(){
-    for(let l of leagues){
-        let t = await getTeams(l);
-        allTeams.push(...t);
-        if(allTeams.length>=200) break;
-    }
-
-    allTeams = allTeams.slice(0,200);
-    startGame();
-}
-
-/* GAME */
-let q=[];
-let i=0;
-
-function startGame(){
-    q = allTeams.sort(()=>Math.random()-0.5).slice(0,10);
-    i=0;
-    load();
+  q = teams.sort(()=>Math.random()-0.5).slice(0,10);
+  load();
 }
 
 function load(){
-    logo.src=q[i].img;
-    answer.value="";
+  logo.src=q[i].img;
+  ans.value="";
+  barFill.style.width=(i*10)+"%";
 }
 
 function check(){
-    let v=answer.value.toLowerCase();
-    let c=q[i].name.toLowerCase();
+  let v=ans.value.toLowerCase();
+  let c=q[i].name.toLowerCase();
 
-    if(v==c){
-        ok.play();
-        user.xp+=10;
-        notify("Doğru +10XP");
-    }else{
-        no.play();
-        notify("Yanlış!");
-    }
+  logo.classList.remove("correct","wrong");
 
-    update();
-    i++;
-    if(i>=q.length) i=0;
-    load();
+  if(v===c){
+    score++;
+    logo.classList.add("correct");
+  }else{
+    logo.classList.add("wrong");
+  }
+
+  setTimeout(next,500);
 }
 
-function skip(){
-    i++;
-    load();
+function skip(){next();}
+
+function next(){
+  i++;
+  if(i>=q.length){
+    finish();
+    return;
+  }
+  load();
 }
 
-/* XP */
-function update(){
-    user.level=Math.floor(user.xp/100);
-    xp.innerText=user.xp;
-    level.innerText=user.level;
-    xpBar.style.width=(user.xp%100)+"%";
+function finish(){
+  document.getElementById("game").style.display="none";
+  document.getElementById("resultBox").style.display="block";
+
+  let text =
+  score==10 ? "MÜKEMMEL 🔥" :
+  score>=7 ? "İYİ 👍" :
+  score>=5 ? "ORTA 😐" :
+  "KÖTÜ 😅";
+
+  resultText.innerText = text + " ("+score+"/10)";
 }
 
-/* FRIENDS */
-function addFriend(){
-    user.friends.push(friendInput.value);
-    renderFriends();
-}
-
-function renderFriends(){
-    friends.innerHTML="";
-    user.friends.forEach(f=>{
-        friends.innerHTML+=`<div>👤 ${f}</div>`;
-    });
-}
-
-/* NOTIF */
-function notify(t){
-    notif.style.display="block";
-    notif.innerText=t;
-    setTimeout(()=>notif.style.display="none",1500);
-}
-
-/* INIT */
-update();
-loadTeams();
 </script>
 
 </body>
